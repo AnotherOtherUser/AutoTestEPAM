@@ -1,6 +1,6 @@
 import java.awt.*;
 import java.sql.*;
-import java.util.*
+import java.util.*;
 import java.util.Scanner;
 
 public class EditorBD {
@@ -39,34 +39,54 @@ public class EditorBD {
             System.out.println("Список доступных таблиц");
             System.out.println(tableName);
 
-            System.out.print("Введите имя таблицы: ");
-            String inputTable = scan.next();
+            System.out.print("Что вы хотите добавить?\n1 - Транспорт;\n2 - Рейс;\n3 - Назначить транспорт на рейс.");
+            int inputTable = scan.nextInt();
 
-            if (tableName.contains(inputTable)) {
+            switch (inputTable){
+                case 1:
+                    System.out.println("Для добавления транспорта введите следующие данные:\nНомер транспорта: ");
+                    int num_trans = scan.nextInt();
+                    System.out.println("Введите тип транспорта (автобус, троллейбус, трамвай и т.д.)");
+                    String type_trans = scan.next();
 
-                
+                    try {
+                        st = con.createStatement();
+                        st.executeUpdate("INSERT INTO transport (trans_num, type) VALUES (".concat(num_trans + ", " + type_trans + ")"));
 
-                try {
-                    st = con.createStatement();
-                    st.executeUpdate("INSERT INTO ".concat(table + " VALUES ").concat("(" + num_route + ", " + len + ")"));
+                        System.out.println("\nГотово!\n");
+                        st.cancel();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    table_err = false;
+                    break;
+                case 2:
+                    System.out.println("Для добавления маршрута введите следующие данные:\nНомер маршрута: ");
+                    int num_route = scan.nextInt();
+                    System.out.println("Введите длину маршрута:");
+                    String route_len = scan.next();
 
-                    System.out.println("\nГотово!\n");
-                    st.cancel();
+                    try {
+                        st = con.createStatement();
+                        st.executeUpdate("INSERT INTO route (num_route, len) VALUES (".concat(num_route + ", " + route_len + ")"));
 
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
+                        System.out.println("\nГотово!\n");
+                        st.cancel();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    table_err = false;
+                    break;
+                case 3:
+                    // Ввод соответствия маршрута и транспорта.
+                    // Нужна проверка на наличие такого маршрута и транспорта в БД
 
-                table_err = false;
-            }
-            else {
-                table_err = true;
-                System.out.println("Таблицы с таким именем не существует. Попробуйте еще раз.\n");
+                    table_err = false;
+                    break;
+                default:
+                    System.out.println("Введено неверное значение. Попробуйте еще раз");
             }
         }
-
-
-
     }
 
     // Редактирование строки в таблице
