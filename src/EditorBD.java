@@ -96,6 +96,60 @@ public class EditorBD {
 
     // Удаление строки из таблицы
     public static void delete_row(Connection con) {
+        Statement st = null;
+        ResultSet rs = null;
+        ArrayList tableName = tableNames(con);
+        Scanner scan = new Scanner(System.in);
+
+        boolean table_err = true;
+        while (table_err){
+            System.out.println("Список доступных таблиц");
+            System.out.println(tableName);
+
+            System.out.println("\nВведите имя таблицы, из которой хотите удалить запись: ");
+            String input = scan.next();
+
+            if (tableName.contains(input)) {
+                try {
+                    st = con.createStatement();
+                    rs = st.executeQuery("SELECT * FROM ".concat(input));
+                    DatabaseMetaData dmd = con.getMetaData();
+                    ResultSet rsPrimaryKey = dmd.getPrimaryKeys(null, null, input);
+
+                    switch (input){
+                        case "route":
+                            System.out.print("Укажите номер маршрута, который хотите удалить: ");
+                            break;
+                        case "transport":
+                            System.out.print("Укажите номер транспорта, который хотите удалить: ");
+                            break;
+                        case "route_trans":
+                            System.out.print("Укажите номер маршрута, с которого хотите снять транспорт: ");
+                            break;
+                    }
+
+                    int delete_input = scan.nextInt();
+                    while (rs.next()) {
+                        if (rs.getInt(1) == delete_input) {
+                            st.executeUpdate("DELETE FROM ".concat(input + " WHERE "));
+                        }
+                    }
+
+                    System.out.println("Удалено");
+
+                    st.cancel();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+
+
+            }
+            else{
+                System.out.println("Таблицы с таким именем не существует. Попробуйте еще раз.");
+            }
+        }
+
+
         System.out.println("Delete");
     }
 
